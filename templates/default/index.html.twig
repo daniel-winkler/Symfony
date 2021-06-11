@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %} {# por defecto busca desde la carpeta templates directamente  #}
+
+{% block body %}
+    {# <p>¡ Hola {{ nombre }} {{ apellido }} !</p> #}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Edad</th>
+                <th>Localidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for person in people %}
+                <tr>
+                    <td>{{ person.name }}</td>
+                    <td>{{ person.email }}</td>
+                    <td>{{ person.age }}</td>
+                    <td>{{ person.city }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: pink
+        }
+    </style>
+{% endblock %}
