@@ -123,6 +123,20 @@ class DefaultController extends AbstractController{
 
         return new RedirectResponse("/", Response::HTTP_TEMPORARY_REDIRECT);
     }
+
+    /**
+     * @Route(
+     *      "default/{id}.{_format}",
+     *      name="default_person_json",
+     *      requirements = {
+     *         "id": "[0-3]",
+     *         "_format": "json"
+     *      }
+     * )
+     */
+    public function personJson(int $id): JsonResponse {
+        return $this->json(self::PEOPLE[$id]);
+    }
 }
 
 
