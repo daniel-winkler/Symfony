@@ -1,0 +1,15 @@
+<header>
+    <nav>
+        <ul>
+            <li><a href="{{ path('default_redirect_to_home') }}">Inicio</a></li>
+            <li><a href="{{ path('default_index') }}">Empleados HTML</a></li> {# path nos crea la ruta relativa #}
+            {# <li><a href="{{ url('default_index') }}">Empleados HTML</a></li> #} {# url nos indica la ruta absoluta #}
+            <li><a href="{{ path('default_index_json', {_format: 'json'}) }}">Empleados JSON</a></li> {# como hemos puesto un requerimiento en nuestra ruta del controlador, hay que pasarselo a path como segundo argumento#}
+        </ul>
+    </nav>
+</header> 
+
+{# https://symfony.com/doc/current/reference/twig_reference.html #}
+
+{# symfony console debug:router #}
+{# symfony console reouter:match /default #}

@@ -16,25 +16,16 @@
                 <th>Email</th>
                 <th>Edad</th>
                 <th>Localidad</th>
-                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for person in people %}
-                <tr>
-                    <td>{{ person.name }}</td>
-                    {# https://twig.symfony.com/doc/2.x/tags/for.html #}
-                    <td>{{ person.email }}</td>
-                    <td>{{ person.age }}</td>
-                    <td>{{ person.city }}</td>
-                    <td>
-                        <ul>
-                            <li><a href="{{ path('default_show', { id: loop.index0 }) }}">Ver en formato HTML</a></li>
-                            <li><a href="#">Ver en formato JSON</a></li>
-                        </ul>
-                    </td>
-                </tr>
-            {% endfor %}
+            <tr>
+                <td><a href="{{ path('default_show', { id: id }) }}">{{ person.name }}</a></td>
+                {# https://twig.symfony.com/doc/2.x/tags/for.html #}
+                <td>{{ person.email }}</td>
+                <td>{{ person.age }}</td>
+                <td>{{ person.city }}</td>
+            </tr>
         </tbody>
     </table>
 {% endblock %}
