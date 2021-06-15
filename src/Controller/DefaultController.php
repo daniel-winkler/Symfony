@@ -81,8 +81,11 @@ class DefaultController extends AbstractController{
 
     // symfony console router:match /default.json
 
-    public function indexJson(): JsonResponse {
-        return $this->json(self::PEOPLE); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
+    public function indexJson(Request $request): JsonResponse {
+        
+        $data = $request->query->has('id') ? self::PEOPLE[$request->query->get('id')] : self::PEOPLE;
+        
+        return $this->json($data); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
         // return new JsonResponse(self::PEOPLE); // con self accedemos a constantes dentro de la clase
     }
 
@@ -129,7 +132,6 @@ class DefaultController extends AbstractController{
      *      "default/{id}.{_format}",
      *      name="default_person_json",
      *      requirements = {
-     *         "id": "[0-3]",
      *         "_format": "json"
      *      }
      * )
