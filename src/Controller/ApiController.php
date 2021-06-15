@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api", name="api_") // indicamos la ruta como raiz de las siguientes, que se van concatenando.
+ * @Route("/api/api", name="api_") // indicamos la ruta como raiz de las siguientes, que se van concatenando.
  */
 
 class ApiController extends AbstractController
