@@ -37,6 +37,11 @@ class Employee
      */
     private $city;
 
+    /**
+     * @ORM\Column(type="string", length=128, nullable=true)
+     */
+    private $phone;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +91,18 @@ class Employee
     public function setCity(?string $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
 
         return $this;
     }
