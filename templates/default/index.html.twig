@@ -14,7 +14,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th>Edad</th>
+                <th>Edad <a href="{{ path('default_index', { orderBy: 'age', orderDir: 'ASC' }) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'age', orderDir: 'DESC' }) }}">⬇</a></th>
                 <th>Localidad</th>
                 <th>Acciones</th>
             </tr>
@@ -30,8 +30,8 @@
                     <td>
                         <ul>
                             <li><a href="{{ path('default_show', { id: person.id }) }}">Ver en formato HTML</a></li>
-                            {# <li><a href="{{ path('default_person_json', { id: loop.index0, _format: "json" }) }}">Ver en formato JSON</a></li> #}
-                            <li><a href="{{ path('default_index_json', { id: person.id, _format: "json" }) }}">Ver en formato JSON</a></li> {# cualquier parametro que enviemos en el enlace y no este contemplada en el Route, lo envia como ?= en la URL #}
+                            <li><a href="{{ path('default_person_json', { id: person.id, _format: "json" }) }}">Ver en formato JSON 1.0</a></li>
+                            <li><a href="{{ path('default_index_json', { id: person.id, _format: "json" }) }}">Ver en formato JSON 2.0</a></li> {# cualquier parametro que enviemos en el enlace y no este contemplada en el Route, lo envia como ?= en la URL #}
                         </ul>
                     </td>
                 </tr>

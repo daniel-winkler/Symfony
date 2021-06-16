@@ -27,12 +27,12 @@ class DefaultController extends AbstractController{
     // El primer parámetro de Route es la URL a la que queremos asociar la acción.
     // El segundo parámetro de Route es el nombre que queremos dar a la ruta.
 
-    public function index(Request $request): Response {
+    public function index(Request $request, EmployeeRepository $employeeRepository): Response { // es mas comodo declarar la funcion de esta manera donde recibimos toda la info desde EmployeeRepository, que se nos creó al crear la entidad Employee por consola
 
-        if($request->query->has('id')) {
-            echo '<pre>'; var_dump($request->get('id')); echo '</pre>'; 
-            die();
-        }
+        // if($request->query->has('id')) {
+        //     echo '<pre>'; var_dump($request->get('id')); echo '</pre>'; 
+        //     die();
+        // }
 
         // echo '<pre>'; var_dump($request->query); echo '</pre>'; // equivalente a la superglobal $_GET de php
         // echo '<pre>'; var_dump($request->request); echo '</pre>'; // equivalente a la superglobal $_POST de php
@@ -51,12 +51,17 @@ class DefaultController extends AbstractController{
         // $name = "Daniel";
         // $lastname = "Winkler";
 
-        $orm = $this->getDoctrine();
-        $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
-        $people = $repo->findAll();
+        // OTRO METODO
+        // $orm = $this->getDoctrine();
+        // $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
+        // $people = $repo->findAll();
 
-        // public function index(EmployeeRepository $employeeRepository): Response // es mas comodo declarar la funcion de esta manera donde recibimos toda la info desde EmployeeRepository, que se nos creó al crear la entidad Employee por consola
-        // $people = $employeeRepository->findAll();
+        $order = [];
+        if($request->query->has('orderBy')) {
+            $order[$request->query->get('orderBy')] = $request->query->get('orderDir');
+        }
+
+        $people = $employeeRepository->findBy([], $order); // ctrl+click a EmployeeRepository para ver los metodos disponibles
 
         return $this->render('default/index.html.twig', [
             // "nombre" => $name,
@@ -83,20 +88,23 @@ class DefaultController extends AbstractController{
      * )
      */
 
-    // symfony console router:match /default.json
-
-    public function indexJson(EmployeeRepository $employeeRepository): JsonResponse {
+    public function indexJson(Request $request, EmployeeRepository $employeeRepository): JsonResponse {
         
-        // public function indexJson(Request $request): JsonResponse
-        // $data = $request->query->has('id') ? [] : [];
+        $person = $request->query->has('id') ? $employeeRepository->find($request->query->get('id')) : $employeeRepository->findAll();
         // $orm = $this->getDoctrine();
         // $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
         // $people = $repo->findAll();
-        $people = $employeeRepository->findAll();
+        // $people = $employeeRepository->findAll();
         
-        return $this->json($people); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
+        return $this->json($person); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
         // return new JsonResponse($people); // con self accedemos a constantes dentro de la clase
     }
+
+    // Solucion Loli
+    // public function userJson(int $id, EmployeeRepository $employeeRepository): JsonResponse {
+    //     $data = $employeeRepository->find($id);
+    //     return $this->json($data);
+    // }
 
 
     /**
@@ -118,6 +126,26 @@ class DefaultController extends AbstractController{
             'person' => $person
         ]);
     }
+
+    /**
+     * @Route(
+     *      "/default/{id}",
+     *      name="default_show",
+     *      requirements = {
+     *          "id": "\d+"
+     *      }
+     * )
+     */
+    // La técinca ParamConverte inyecta directamente,
+    // un objeto del tipo indicado como parámetro
+    // intentando hacer un match del parámetro de la ruta
+    // con alguna de las propiedades del objeto requerido.
+    // public function show(Employee $employee): Response {
+    //     return $this->render('default/show.html.twig', [
+    //         'person' => $employee
+    //     ]);
+    // }
+
 
     /**
      * @Route(
@@ -147,8 +175,9 @@ class DefaultController extends AbstractController{
      *      }
      * )
      */
-    public function personJson(int $id): JsonResponse {
-        return $this->json([]);
+    public function personJson(int $id, EmployeeRepository $employeeRepository): JsonResponse {
+        $person = $employeeRepository->find($id);
+        return $this->json($person);
     }
 }
 
