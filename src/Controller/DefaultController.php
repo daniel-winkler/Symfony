@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Employee;
+use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -53,6 +54,10 @@ class DefaultController extends AbstractController{
         $orm = $this->getDoctrine();
         $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
         $people = $repo->findAll();
+
+        // public function index(EmployeeRepository $employeeRepository): Response // es mas comodo declarar la funcion de esta manera donde recibimos toda la info desde EmployeeRepository, que se nos creó al crear la entidad Employee por consola
+        // $people = $employeeRepository->findAll();
+
         return $this->render('default/index.html.twig', [
             // "nombre" => $name,
             // "apellido" => $lastname
@@ -80,12 +85,17 @@ class DefaultController extends AbstractController{
 
     // symfony console router:match /default.json
 
-    public function indexJson(Request $request): JsonResponse {
+    public function indexJson(EmployeeRepository $employeeRepository): JsonResponse {
         
-        $data = $request->query->has('id') ? [] : [];
+        // public function indexJson(Request $request): JsonResponse
+        // $data = $request->query->has('id') ? [] : [];
+        // $orm = $this->getDoctrine();
+        // $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
+        // $people = $repo->findAll();
+        $people = $employeeRepository->findAll();
         
-        return $this->json($data); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
-        // return new JsonResponse(self::PEOPLE); // con self accedemos a constantes dentro de la clase
+        return $this->json($people); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
+        // return new JsonResponse($people); // con self accedemos a constantes dentro de la clase
     }
 
 
@@ -94,16 +104,18 @@ class DefaultController extends AbstractController{
      *      "/default/{id}",
      *      name="default_show",
      *      requirements = {
-     *          "id": "[0-3]"
+     *          "id": "\d+"
      *      }
      * )
      */
 
-    public function show(int $id): Response {
+    public function show(int $id, EmployeeRepository $employeeRepository): Response {
         // var_dump($id); die();
+        $person = $employeeRepository->find($id);
+        dump($person); // nos indica en el profiler como debug lo que nos vale
         return $this->render('default/show.html.twig', [
             'id' => $id,
-            'person' => []
+            'person' => $person
         ]);
     }
 

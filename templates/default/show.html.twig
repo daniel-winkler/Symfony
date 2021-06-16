@@ -20,7 +20,7 @@
         </thead>
         <tbody>
             <tr>
-                <td><a href="{{ path('default_show', { id: id }) }}">{{ person.name }}</a></td>
+                <td><a href="{{ path('default_show', { id: person.id }) }}">{{ person.name }}</a></td>
                 {# https://twig.symfony.com/doc/2.x/tags/for.html #}
                 <td>{{ person.email }}</td>
                 <td>{{ person.age }}</td>
