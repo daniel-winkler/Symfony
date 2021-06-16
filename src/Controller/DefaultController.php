@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Employee;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,12 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
                                 // AbstractController es un controlador de symfony que pone a disposicion multitud de caracteristicas.
 class DefaultController extends AbstractController{
 
-    const PEOPLE = [
-        ['name' => 'Carlos', 'email' => 'carlos@correo.com', 'age' => 30, 'city' => 'Benalmádena'],
-        ['name' => 'Carmen', 'email' => 'carmen@correo.com', 'age' => 25, 'city' => 'Fuengirola'],
-        ['name' => 'Carmelo', 'email' => 'carmelo@correo.com', 'age' => 35, 'city' => 'Torremolinos'],
-        ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'],        
-    ];
+    
 
     /**
      * @Route("/default", name="default_index");
@@ -54,10 +50,13 @@ class DefaultController extends AbstractController{
         // $name = "Daniel";
         // $lastname = "Winkler";
 
+        $orm = $this->getDoctrine();
+        $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
+        $people = $repo->findAll();
         return $this->render('default/index.html.twig', [
             // "nombre" => $name,
             // "apellido" => $lastname
-            "people" => self::PEOPLE
+            "people" => $people
         ]);
     }
 
@@ -83,7 +82,7 @@ class DefaultController extends AbstractController{
 
     public function indexJson(Request $request): JsonResponse {
         
-        $data = $request->query->has('id') ? self::PEOPLE[$request->query->get('id')] : self::PEOPLE;
+        $data = $request->query->has('id') ? [] : [];
         
         return $this->json($data); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
         // return new JsonResponse(self::PEOPLE); // con self accedemos a constantes dentro de la clase
@@ -104,7 +103,7 @@ class DefaultController extends AbstractController{
         // var_dump($id); die();
         return $this->render('default/show.html.twig', [
             'id' => $id,
-            'person' => self::PEOPLE[$id]
+            'person' => []
         ]);
     }
 
@@ -137,7 +136,7 @@ class DefaultController extends AbstractController{
      * )
      */
     public function personJson(int $id): JsonResponse {
-        return $this->json(self::PEOPLE[$id]);
+        return $this->json([]);
     }
 }
 
