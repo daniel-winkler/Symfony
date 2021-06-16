@@ -2,13 +2,21 @@
 
 namespace App\Controller;
 
+use App\Entity\Employee;
+use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/amazing-employees", name="api_employees_")
  */
+
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#successful_responses
+// https://github.com/omniti-labs/jsend
+// https://www.restapitutorial.com/lessons/httpmethods.html
+// https://www.redhat.com/es/topics/api/what-is-a-rest-api
 
 class ApiEmployeesController extends AbstractController
 {
@@ -19,12 +27,14 @@ class ApiEmployeesController extends AbstractController
      *      methods={"GET"}  
      * )
      */
-    public function index(): Response
+    public function index(Request $request, EmployeeRepository $employeeRepository): Response
     {
-        return $this->json([
-            'method' => 'Collection GET',
-            'description' => 'Devuelve el listado del recurso Empleados'
-        ]);
+        if($request->query->has('term')) {
+            $people = $employeeRepository->findByTerm($request->query->get('term'));
+            return $this->json($people);
+        }
+
+        return $this->json($employeeRepository->findAll());
     }
 
     /**
@@ -37,12 +47,13 @@ class ApiEmployeesController extends AbstractController
      *      }     
      * )
      */
-    public function show(int $id): Response
+    public function show(int $id, EmployeeRepository $employeeRepository): Response
     {
-        return $this->json([
-            'method' => 'GET',
-            'description' => 'Devuelve un solo recurso empleado: '.$id.'.'
-        ]);
+        // Dump Server // https://symfony.com/doc/current/components/var_dumper.html#the-dump-server
+        $data = $employeeRepository->find($id);
+        dump($id);
+        dump($data); // symfony console server:dump
+        return $this->json($data);
     }
 
     /**
