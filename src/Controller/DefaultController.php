@@ -28,7 +28,13 @@ class DefaultController extends AbstractController{
     // El segundo parámetro de Route es el nombre que queremos dar a la ruta.
 
     public function index(Request $request, EmployeeRepository $employeeRepository): Response { // es mas comodo declarar la funcion de esta manera donde recibimos toda la info desde EmployeeRepository, que se nos creó al crear la entidad Employee por consola
-
+        
+        if($request->query->has('term')) {
+            $people = $employeeRepository->findByTerm($request->query->get('term'));
+            return $this->render('default/index.html.twig', [
+                "people" => $people
+            ]);
+        }
         // if($request->query->has('id')) {
         //     echo '<pre>'; var_dump($request->get('id')); echo '</pre>'; 
         //     die();
