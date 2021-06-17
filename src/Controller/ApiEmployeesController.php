@@ -128,11 +128,19 @@ class ApiEmployeesController extends AbstractController
      *      } 
      * )
      */
-    public function remove(int $id): Response
+    public function remove(
+        Employee $employee,
+        EntityManagerInterface $entityManager
+        ): Response
     {
-        return $this->json([
-            'method' => 'Delete',
-            'description' => 'Elimina un recurso empleado: '.$id.'.'
-        ]);
+        dump($employee);
+
+        $entityManager->remove($employee);
+        $entityManager->flush();
+
+        return $this->json(
+            null,
+            Response::HTTP_NO_CONTENT
+        );
     }
 }
