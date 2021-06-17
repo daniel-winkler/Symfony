@@ -5,8 +5,13 @@ namespace App\Entity;
 use App\Repository\EmployeeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+// https://symfony.com/doc/current/validation.html#constraints
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * @ORM\Entity(repositoryClass=EmployeeRepository::class)
+ * @UniqueEntity("email")
  */
 class Employee
 {
@@ -19,16 +24,25 @@ class Employee
 
     /**
      * @ORM\Column(type="string", length=128)
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(type="string", length=128, unique=true)
+     * @Assert\Email(
+     *     message = "The email {{ value }} is not a valid email."
+     * )
+     * 
      */
     private $email;
 
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\GreaterThanOrEqual(
+     *     value = 18,
+     *     message = "El empleado debe ser mayor de edad"
+     * )
      */
     private $age;
 

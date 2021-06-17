@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/amazing-employees", name="api_employees_")
@@ -66,7 +67,8 @@ class ApiEmployeesController extends AbstractController
      */
     public function add(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator
         ): Response
     {
         // dump($request->request);
@@ -80,7 +82,29 @@ class ApiEmployeesController extends AbstractController
         $employee->setCity($data->get('city'));
         $employee->setPhone($data->get('phone'));
 
-        dump($employee);
+        $errors = $validator->validate($employee);
+        // dump($errors);
+        if(count($errors) > 0){
+            $dataErrors = [];
+
+            /**
+             * @var \Symfony\Component\Validator\ConstraintViolation $error
+             */
+            foreach($errors as $error) {
+                $dataErrors[] = $error->getMessage(); // la ruta @var da informacion de lo que es la variable $error y nos ayuda a autocompletar getMessage()
+            }
+
+            return $this->json([
+                'status' => 'error',
+                'data' => [
+                    'errors' => $dataErrors
+                ]
+            ],
+                Response::HTTP_BAD_REQUEST    
+            );
+        }
+
+        // dump($employee);
 
         // Entity Manager // https://symfony.com/doc/current/doctrine.html
         $entityManager->persist($employee); // persist guarda los datos en memoria (como un commit en git)
