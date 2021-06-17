@@ -110,12 +110,27 @@ class ApiEmployeesController extends AbstractController
      *      } 
      * )
      */
-    public function update(int $id): Response
+    public function update(
+        Request $request,
+        Employee $employee,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        return $this->json([
-            'method' => 'PUT',
-            'description' => 'Actualiza un recurso empleado: '.$id.'.'
-        ]);
+        $data = $request->request;
+
+        $data->has('name') ? $employee->setName($data->get('name')) : null ;
+        $data->has('email') ? $employee->setEmail($data->get('email')) : null;
+        $data->has('age') ? $employee->setAge($data->get('age')) : null;
+        $data->has('city') ? $employee->setCity($data->get('city')) : null;
+        $data->has('phone') ? $employee->setPhone($data->get('phone')) : null;
+
+        // $entityManager->persist($employee); // no es necesario el persist cuando el objeto ya esta en nuestra BBDD
+        $entityManager->flush();
+
+        return $this->json(
+            $employee,
+            Response::HTTP_OK
+        );
     }
 
     /**
@@ -134,6 +149,13 @@ class ApiEmployeesController extends AbstractController
         ): Response
     {
         dump($employee);
+
+        //$employee = $employeeRepository->find($id); (int $id, EmployeeRepository $employeeRepository)
+        // if(!$employee) {
+        //     return $this->json([
+        //         'message' => sprintf('No he encontrado el empledo con id.: %s', $id)
+        //     ], Response::HTTP_NOT_FOUND);
+        // }
 
         $entityManager->remove($employee);
         $entityManager->flush();
