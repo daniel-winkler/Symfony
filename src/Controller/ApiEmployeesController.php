@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Employee;
 use App\Repository\EmployeeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,12 +64,40 @@ class ApiEmployeesController extends AbstractController
      *      methods={"POST"}   
      * )
      */
-    public function add(): Response
+    public function add(
+        Request $request,
+        EntityManagerInterface $entityManager
+        ): Response
     {
-        return $this->json([
-            'method' => 'POST',
-            'description' => 'Crea un recurso empleado'
-        ]);
+        // dump($request->request);
+        $data = $request->request;
+
+        $employee = new Employee();
+
+        $employee->setName($data->get('name'));
+        $employee->setEmail($data->get('email'));
+        $employee->setAge($data->get('age'));
+        $employee->setCity($data->get('city'));
+        $employee->setPhone($data->get('phone'));
+
+        dump($employee);
+
+        // Entity Manager // https://symfony.com/doc/current/doctrine.html
+        $entityManager->persist($employee); // persist guarda los datos en memoria (como un commit en git)
+        $entityManager->flush(); // flush ejecuta y manda el body a la base de datos
+
+        return $this->json(
+            $employee,
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->generateUrl(
+                    'api_employees_get', // el name de la ruta a la que queremos relocalizar
+                    [
+                        'id' => $employee->getId() // ya que en nuestro Route hemos puesto parametros obligatorios id, se lo pasamos por array asociativo como nos indica generateURl
+                    ]
+                )
+            ]
+        );
     }
 
     /**
