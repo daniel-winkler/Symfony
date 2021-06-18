@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Employee;
 use App\Repository\EmployeeRepository;
+use App\Service\EmployeeNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -94,15 +95,63 @@ class DefaultController extends AbstractController{
      * )
      */
 
-    public function indexJson(Request $request, EmployeeRepository $employeeRepository): JsonResponse {
+    public function indexJson(
+        Request $request,
+        EmployeeRepository $employeeRepository,
+        EmployeeNormalizer $employeeNormalizer
+        ): JsonResponse {
         
-        $person = $request->query->has('id') ? $employeeRepository->find($request->query->get('id')) : $employeeRepository->findAll();
+        $result = $request->query->has('id') ? $employeeRepository->find($request->query->get('id')) : $employeeRepository->findAll();
         // $orm = $this->getDoctrine();
         // $repo = $orm->getRepository(Employee::class); // use App\Entity\Employee;
         // $people = $repo->findAll();
         // $people = $employeeRepository->findAll();
+
+        $finaljson = [
+            'name' => 'Index JSON',
+            'page' => 1
+        ];
+
+        $data = [];
+
+        if($result instanceof Employee) {
+            $employee = $employeeNormalizer->employeeNormalizer($result);
+            return $this->json($employee);
+        }
+
+        // foreach($result as $employee) {
+
+        //     $projects = [];
+        //     foreach($employee->getProjects() as $project) {
+        //         array_push($projects, [
+        //             'id' => $project->getId(),
+        //             'name' => $project->getName()
+        //         ]);
+        //     }
+
+        //     array_push($data, [
+        //         'name' => $employee->getName(),
+        //         'email' => $employee->getEmail(),
+        //         'age' => $employee->getAge(),
+        //         'city' => $employee->getCity(),
+        //         'department' => [
+        //             'id' => $employee->getDepartment()->getId(),
+        //             'name' => $employee->getDepartment()->getName()
+        //         ],
+        //         'projects' => $projects
+        //         ]);
+        // }
+
+        foreach ($result as $employee) {
+            array_push($data, $employeeNormalizer->employeeNormalizer($employee));
+        }
+
+        array_push($finaljson, [
+            'results' => $data
+        ]);
+
         
-        return $this->json($person); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
+        return $this->json($data); // con este metodo podriamos utilizar la clase Response, ya que la funcion json() utiliza JsonResponse.
         // return new JsonResponse($people); // con self accedemos a constantes dentro de la clase
     }
 
@@ -181,10 +230,37 @@ class DefaultController extends AbstractController{
      *      }
      * )
      */
-    public function personJson(int $id, EmployeeRepository $employeeRepository): JsonResponse {
-        $person = $employeeRepository->find($id);
+    public function personJson(int $id, EmployeeRepository $employeeRepository, EmployeeNormalizer $employeeNormalizer): JsonResponse {
+        $result = $employeeRepository->find($id);
+        $person = $employeeNormalizer->employeeNormalizer($result);
         return $this->json($person);
     }
+
+    // private function normalizeEmployee(Employee $employee): ?array {
+
+    //     $projects = [];
+    //     foreach($employee->getProjects() as $project) {
+    //         array_push($projects, [
+    //             'id' => $project->getId(),
+    //             'name' => $project->getName()
+    //         ]);
+    //     }
+
+    //     $data = [
+    //         'name' => $employee->getName(),
+    //         'email' => $employee->getEmail(),
+    //         'age' => $employee->getAge(),
+    //         'city' => $employee->getCity(),
+    //         'department' => [
+    //             'id' => $employee->getDepartment()->getId(),
+    //             'name' => $employee->getDepartment()->getName()
+    //         ],
+    //         'projects' => $projects
+    //     ];
+
+    //     return $data;
+
+    // }
 }
 
 
