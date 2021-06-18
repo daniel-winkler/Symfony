@@ -21,6 +21,8 @@
                 <th>Email</th>
                 <th>Edad <a href="{{ path('default_index', { orderBy: 'age', orderDir: 'ASC' }) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'age', orderDir: 'DESC' }) }}">⬇</a></th>
                 <th>Localidad</th>
+                <th>Departamento</th>
+                <th>Proyectos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -32,6 +34,17 @@
                     <td>{{ person.email }}</td>
                     <td>{{ person.age }}</td>
                     <td>{{ person.city }}</td>
+                    <td>{{ person.department }}</td> {# al ser una propiedad relacionada no es un string puro, por lo que hay que añadirle el metodo __toString() como funcion a la entidad Department #}
+                    {# https://twig.symfony.com/doc/2.x/templates.html#variables #}
+                    <td>
+                        <ul>
+                        {% for project in person.projects %}
+                            <li>{{ project }}</li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    {# <td>{{ person.projects|join(' - ') }}</td> #}
+                    {# https://twig.symfony.com/doc/3.x/templates.html#filters , https://twig.symfony.com/doc/3.x/filters/index.html #}
                     <td>
                         <ul>
                             <li><a href="{{ path('default_show', { id: person.id }) }}">Ver en formato HTML</a></li>
@@ -49,6 +62,9 @@
     <style>
         body {
             background-color: pink
+        }
+        table, td, th {
+            border: 1px solid black
         }
     </style>
 {% endblock %}

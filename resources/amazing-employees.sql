@@ -7,3 +7,10 @@ VALUES ('Daniel','daniel@correo.com',32,'Rincón'),
 ('Pablo','pablo@correo.com',28,'Pedregalejo'),
 ('Kiko','kiko@correo.com',20,'Antequera'),
 ('Viviana','carolina@correo.com',30,'Colonia');
+
+
+INSERT INTO `project` (`name`)
+VALUES ('Proyecto Molón'),
+('Proyecto Marrón'),
+('Proyecto Boomerang'),
+('Proyecto No quiero tocarlo ni con un palo');
