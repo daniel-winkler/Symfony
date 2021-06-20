@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Employee;
 use App\Repository\DepartmentRepository;
 use App\Repository\EmployeeRepository;
+use App\Repository\ProjectRepository;
 use App\Service\EmployeeNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -167,22 +168,54 @@ class ApiEmployeesController extends AbstractController
     public function update(
         Request $request,
         Employee $employee,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        DepartmentRepository $departmentRepository,
+        ProjectRepository $projectRepository,
+        EmployeeNormalizer $employeeNormalizer
     ): Response
     {
         $data = $request->request;
+
+        // $department = $departmentRepository->find($data->get('department_id'));
 
         $data->has('name') ? $employee->setName($data->get('name')) : null ;
         $data->has('email') ? $employee->setEmail($data->get('email')) : null;
         $data->has('age') ? $employee->setAge($data->get('age')) : null;
         $data->has('city') ? $employee->setCity($data->get('city')) : null;
         $data->has('phone') ? $employee->setPhone($data->get('phone')) : null;
+        $data->has('department_id') ? $employee->setDepartment($departmentRepository->find($data->get('department_id'))) : null;
+
+        $data->has('add_project_id') ? $employee->addProject($projectRepository->find($data->get('project_id'))) : null;
+        $data->has('remove_project_id') ? $employee->removeProject($projectRepository->find($data->get('remove_project_id'))) : null;
+
+        $errors = $validator->validate($employee);
+        // dump($errors);
+        if(count($errors) > 0){
+            $dataErrors = [];
+
+            /**
+             * @var \Symfony\Component\Validator\ConstraintViolation $error
+             */
+            foreach($errors as $error) {
+                $dataErrors[] = $error->getMessage(); // la ruta @var da informacion de lo que es la variable $error y nos ayuda a autocompletar getMessage()
+            }
+
+            return $this->json([
+                'status' => 'error',
+                'data' => [
+                    'errors' => $dataErrors
+                ]
+            ],
+                Response::HTTP_BAD_REQUEST    
+            );
+        }
 
         // $entityManager->persist($employee); // no es necesario el persist cuando el objeto ya esta en nuestra BBDD
         $entityManager->flush();
 
         return $this->json(
-            $employee,
+            $employeeNormalizer->employeeNormalizer($employee),
             Response::HTTP_OK
         );
     }
