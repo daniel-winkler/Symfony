@@ -121,6 +121,8 @@ class ApiEmployeesController extends AbstractController
         $employee->setPhone($data->get('phone'));
         $employee->setDepartment($department);
 
+        // https://symfony.com/doc/current/reference/constraints.html#file-constraints
+        // https://developer.mozilla.org/es/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
         if($request->files->has('avatar')){
             $avatarFile = $request->files->get('avatar'); // crea un objeto con toda la informacion del archivo disponible en la superglobal $_FILES (metodo File Upload)
 
@@ -139,9 +141,12 @@ class ApiEmployeesController extends AbstractController
             } catch (FileException $e) {
                 throw new \Exception($e->getMessage());
             }
+
+            $employee->setAvatar($avatarNewFileName); // añadimos el nombre del archivo que será unico, para ponerlo en la propiedad avatar de nuestro employee
+            // https://symfony.com/doc/current/controller/upload_file.html
         }
 
-        die();
+        // die();
 
         $errors = $validator->validate($employee);
         // dump($errors);

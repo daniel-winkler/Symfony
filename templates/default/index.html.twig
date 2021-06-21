@@ -17,6 +17,7 @@
     <table>
         <thead>
             <tr>
+                <th>Avatar</th>
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Edad <a href="{{ path('default_index', { orderBy: 'age', orderDir: 'ASC' }) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'age', orderDir: 'DESC' }) }}">⬇</a></th>
@@ -29,6 +30,7 @@
         <tbody>
             {% for person in people %}
                 <tr>
+                    <td>{% if (person.avatar) %}<img src="{{ asset('employee/avatar/' ~ person.avatar) }}" width="200" />{% endif %}</td>
                     <td>{{ person.name }}</td>
                     {# https://twig.symfony.com/doc/2.x/tags/for.html #}
                     <td>{{ person.email }}</td>
