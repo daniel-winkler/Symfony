@@ -175,7 +175,10 @@ class DefaultController extends AbstractController{
     public function show(int $id, EmployeeRepository $employeeRepository): Response {
         // var_dump($id); die();
         $person = $employeeRepository->find($id);
-        dump($person); // nos indica en el profiler como debug lo que nos vale
+        // dump($person); // nos indica en el profiler como debug lo que nos vale
+        dump($this->getUser());
+        dump($this->isGranted('ROLE_USER'));
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN'); // @IsGranted('ROLE_ADMIN')
         return $this->render('default/show.html.twig', [
             'id' => $id,
             'person' => $person
