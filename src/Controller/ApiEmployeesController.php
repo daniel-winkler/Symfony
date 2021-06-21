@@ -9,9 +9,11 @@ use App\Repository\ProjectRepository;
 use App\Service\EmployeeNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -96,11 +98,17 @@ class ApiEmployeesController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         DepartmentRepository $departmentRepository,
-        EmployeeNormalizer $employeeNormalizer
+        EmployeeNormalizer $employeeNormalizer,
+        SluggerInterface $sluggerInterface
         ): Response
     {
         // dump($request->request);
         $data = $request->request;
+
+        dump($data);
+        dump($request->files);
+
+        // die();
 
         $department = $departmentRepository->find($data->get('department_id'));
 
@@ -112,6 +120,28 @@ class ApiEmployeesController extends AbstractController
         $employee->setCity($data->get('city'));
         $employee->setPhone($data->get('phone'));
         $employee->setDepartment($department);
+
+        if($request->files->has('avatar')){
+            $avatarFile = $request->files->get('avatar'); // crea un objeto con toda la informacion del archivo disponible en la superglobal $_FILES (metodo File Upload)
+
+            $avatarOriginalFileName = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+            dump($avatarOriginalFileName);
+
+            $safeFilename = $sluggerInterface->slug($avatarOriginalFileName); // SluggerInterface normaliza los nombres de los ficheros para depurar caracteres raros.
+            $avatarNewFileName = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension(); // le añadimos un id unico para evitar problemas de nombre de fichero
+            dump($avatarNewFileName);
+
+            try {
+                $avatarFile->move(
+                    $request->server->get('DOCUMENT_ROOT').DIRECTORY_SEPARATOR.'employee/avatar',
+                    $avatarNewFileName
+                );
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+        }
+
+        die();
 
         $errors = $validator->validate($employee);
         // dump($errors);
