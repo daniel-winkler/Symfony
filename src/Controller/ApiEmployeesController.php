@@ -207,10 +207,14 @@ class ApiEmployeesController extends AbstractController
         ValidatorInterface $validator,
         DepartmentRepository $departmentRepository,
         ProjectRepository $projectRepository,
-        EmployeeNormalizer $employeeNormalizer
+        EmployeeNormalizer $employeeNormalizer,
+        SluggerInterface $sluggerInterface
     ): Response
     {
         $data = $request->request;
+        dump($data);
+
+        die();
 
         // $department = $departmentRepository->find($data->get('department_id'));
 
@@ -221,7 +225,7 @@ class ApiEmployeesController extends AbstractController
         $data->has('phone') ? $employee->setPhone($data->get('phone')) : null;
         $data->has('department_id') ? $employee->setDepartment($departmentRepository->find($data->get('department_id'))) : null;
 
-        $data->has('add_project_id') ? $employee->addProject($projectRepository->find($data->get('project_id'))) : null;
+        $data->has('add_project_id') ? $employee->addProject($projectRepository->find($data->get('add_project_id'))) : null;
         $data->has('remove_project_id') ? $employee->removeProject($projectRepository->find($data->get('remove_project_id'))) : null;
 
         $errors = $validator->validate($employee);
@@ -244,6 +248,27 @@ class ApiEmployeesController extends AbstractController
             ],
                 Response::HTTP_BAD_REQUEST    
             );
+        }
+
+        if($request->files->has('avatar')){
+            $avatarFile = $request->files->get('avatar');
+            dump($avatarFile);
+
+            $avatarOriginalFileName = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+            $safeFilename = $sluggerInterface->slug($avatarOriginalFileName);
+            $avatarNewFileName = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+
+            try {
+                $avatarFile->move(
+                    $request->server->get('DOCUMENT_ROOT').DIRECTORY_SEPARATOR.'employee/avatar',
+                    $avatarNewFileName
+                );
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+
+            $employee->setAvatar($avatarNewFileName);
         }
 
         // $entityManager->persist($employee); // no es necesario el persist cuando el objeto ya esta en nuestra BBDD

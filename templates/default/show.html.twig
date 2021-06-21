@@ -12,6 +12,7 @@
     <table>
         <thead>
             <tr>
+                <th>Avatar</th>
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Edad</th>
@@ -21,6 +22,7 @@
         </thead>
         <tbody>
             <tr>
+                <td>{% if (person.avatar) %}<img src="{{ asset('employee/avatar/' ~ person.avatar) }}" width="200" />{% endif %}</td>
                 <td><a href="{{ path('default_show', { id: person.id }) }}">{{ person.name }}</a></td>
                 {# https://twig.symfony.com/doc/2.x/tags/for.html #}
                 <td>{{ person.email }}</td>
@@ -36,6 +38,9 @@
     <style>
         body {
             background-color: pink
+        }
+        table, td, th {
+            border: 1px solid black
         }
     </style>
 {% endblock %}
