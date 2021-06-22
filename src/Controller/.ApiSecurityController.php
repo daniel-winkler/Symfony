@@ -16,6 +16,8 @@ class ApiSecurityController extends AbstractController
         EntityManagerInterface $entityManagerInterface
     ): Response
     {
+        // https://symfony.com/doc/current/security/json_login_setup.html
+
         $user = $this->getUser();
 
         $token = sha1(random_bytes(32)); // sha1 normaliza los bytes generados para que no salgan caracteres raros
