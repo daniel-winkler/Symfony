@@ -16,6 +16,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api
+            provider: app_user_provider
+            json_login:
+                check_path: /api/login
+                # por defecto usa username y password como parametros para las credenciales. si queremos cambiarlo lo hacemos de la siguiente manera
+                # username_path: email
+                # password_path: pass
         main:
             lazy: true
             provider: app_user_provider
@@ -37,3 +45,5 @@ security:
         # https://symfony.com/doc/current/security.html#denying-access-roles-and-other-authorization
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/default, roles: ROLE_USER }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: ROLE_USER }
