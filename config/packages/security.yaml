@@ -64,3 +64,4 @@ security:
         - { path: ^/default, roles: ROLE_USER }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/api, roles: ROLE_USER }}
+        - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }

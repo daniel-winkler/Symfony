@@ -1,0 +1,9 @@
+https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/index.md#getting-started
+
+https://www.babdev.com/open-source/packages/pagerfanta/docs/3.x/intro
+
+https://symfony.com/doc/current/bundles/EasyAdminBundle/index.html
+
+https://symfony.com/doc/current/security/json_login_setup.html
+
+https://symfony.com/doc/current/event_dispatcher.html
