@@ -24,6 +24,21 @@ security:
                 # por defecto usa username y password como parametros para las credenciales. si queremos cambiarlo lo hacemos de la siguiente manera
                 # username_path: email
                 # password_path: pass
+        login:
+            pattern:  ^/api/login
+            stateless: true
+            # anonymous: true DEPRECATED
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/api
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
         main:
             lazy: true
             provider: app_user_provider
@@ -43,7 +58,9 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # https://symfony.com/doc/current/security.html#denying-access-roles-and-other-authorization
-        # - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/default, roles: ROLE_USER }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/api, roles: ROLE_USER }
+        - { path: ^/default, roles: ROLE_USER }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/api, roles: ROLE_USER }}
